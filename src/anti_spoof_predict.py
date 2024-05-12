@@ -135,8 +135,6 @@ class AntiSpoofPredictv2(Detection):
     def predict(self, img, model_name):
         img = self.test_transform(img)
         img = img.unsqueeze(0).to(self.device)
-        # self._load_model(model_path)
-        # self.model.eval()
         with torch.no_grad():
             result = self.models[model_name].forward(img)
             result = F.softmax(result).cpu().numpy()
