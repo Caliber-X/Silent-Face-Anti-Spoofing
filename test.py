@@ -106,4 +106,5 @@ if __name__ == "__main__":
         default="image_F1.jpg",
         help="image used to test")
     args = parser.parse_args()
+    print(args)
     test(args.image_name, args.model_dir, args.device_id)
