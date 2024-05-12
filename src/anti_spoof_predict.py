@@ -97,10 +97,15 @@ class AntiSpoofPredictv2(Detection):
         super().__init__()
         self.device = torch.device("cuda:{}".format(device_id)
                                    if torch.cuda.is_available() else "cpu")
+        # load models
         self.models = {}
         for model_name in os.listdir(model_dir):
             model_path = os.path.join(model_dir, model_name)
             self.models[model_name] = self._load_model(model_path)
+        # preprocess func before inference
+        self.test_transform = trans.Compose([
+            trans.ToTensor(),
+        ])
 
 
     def _load_model(self, model_path) -> ...:
@@ -128,10 +133,7 @@ class AntiSpoofPredictv2(Detection):
 
 
     def predict(self, img, model_name):
-        test_transform = trans.Compose([
-            trans.ToTensor(),
-        ])
-        img = test_transform(img)
+        img = self.test_transform(img)
         img = img.unsqueeze(0).to(self.device)
         # self._load_model(model_path)
         # self.model.eval()
