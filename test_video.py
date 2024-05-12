@@ -7,7 +7,7 @@ import argparse
 import warnings
 import time
 
-from src.anti_spoof_predict import AntiSpoofPredictv2
+from src.anti_spoof_predict import AntiSpoofPredict, AntiSpoofPredictv2
 from src.generate_patches import CropImage
 from src.utility import parse_model_name
 warnings.filterwarnings('ignore')
@@ -24,6 +24,7 @@ def check_image(image):
 
 
 def test(model_dir, device_id):
+    # model_test = AntiSpoofPredict(device_id)
     model_test = AntiSpoofPredictv2(device_id, model_dir)
     image_cropper = CropImage()
     
@@ -44,7 +45,7 @@ def test(model_dir, device_id):
         w = int(3/4*height)
         w1 = int(width - w) // 2
         image = frame[:, w1:w1+w]
-        print(frame.shape, image.shape)
+        print(frame.shape, image.shape, end=" ")
         
         result = check_image(image)
         if result is False:
@@ -66,22 +67,22 @@ def test(model_dir, device_id):
             if scale is None:
                 param["crop"] = False
             img = image_cropper.crop(**param)
-            start = time.time()
+            start = time.perf_counter_ns()
+            # prediction += model_test.predict(img, os.path.join(model_dir, model_name))
             prediction += model_test.predict(img, model_name)
-            test_speed += time.time()-start
+            test_speed += time.perf_counter_ns() - start
 
         # draw result of prediction
         label = np.argmax(prediction)
         value = prediction[0][label]/2
         if label == 1:
-            print("Real Face. Score: {:.2f}.".format(value))
             result_text = "RealFace Score: {:.2f}".format(value)
             color = (255, 0, 0)
         else:
-            print("Fake Face. Score: {:.2f}.".format(value))
             result_text = "FakeFace Score: {:.2f}".format(value)
             color = (0, 0, 255)
-        print("Prediction cost {:.2f} s".format(test_speed))
+        print(result_text, end=" ")
+        print("Prediction cost {:.2f} ms".format(test_speed*1e-6))
         cv2.rectangle(
             image,
             (image_bbox[0], image_bbox[1]),
