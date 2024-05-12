@@ -13,9 +13,6 @@ from src.utility import parse_model_name
 warnings.filterwarnings('ignore')
 
 
-SAMPLE_IMAGE_PATH = "./images/sample/"
-
-
 # 因为安卓端APK获取的视频流宽高比为3:4,为了与之一致，所以将宽高比限制为3:4
 def check_image(image):
     height, width, channel = image.shape
@@ -26,7 +23,7 @@ def check_image(image):
         return True
 
 
-def test(image_name, model_dir, device_id):
+def test(model_dir, device_id):
     model_test = AntiSpoofPredict(device_id)
     image_cropper = CropImage()
     
@@ -77,11 +74,11 @@ def test(image_name, model_dir, device_id):
         label = np.argmax(prediction)
         value = prediction[0][label]/2
         if label == 1:
-            print("Image '{}' is Real Face. Score: {:.2f}.".format(image_name, value))
+            print("Real Face. Score: {:.2f}.".format(value))
             result_text = "RealFace Score: {:.2f}".format(value)
             color = (255, 0, 0)
         else:
-            print("Image '{}' is Fake Face. Score: {:.2f}.".format(image_name, value))
+            print("Fake Face. Score: {:.2f}.".format(value))
             result_text = "FakeFace Score: {:.2f}".format(value)
             color = (0, 0, 255)
         print("Prediction cost {:.2f} s".format(test_speed))
@@ -123,11 +120,6 @@ if __name__ == "__main__":
         type=str,
         default="./resources/anti_spoof_models",
         help="model_lib used to test")
-    parser.add_argument(
-        "--image_name",
-        type=str,
-        default="image_F1.jpg",
-        help="image used to test")
     args = parser.parse_args()
     print(args)
-    test(args.image_name, args.model_dir, args.device_id)
+    test(args.model_dir, args.device_id)
