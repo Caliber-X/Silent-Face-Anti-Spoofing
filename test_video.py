@@ -40,7 +40,7 @@ def test(model_dir, device_id):
         ret, frame = cap.read()
         if not ret:
             break
-        # centre crop to aspect of widt/height to 3/4
+        # centre crop to aspect of width/height to 3/4
         w = int(3/4*height)
         w1 = int(width - w) // 2
         image = frame[:, w1:w1+w]
