@@ -7,7 +7,7 @@ import argparse
 import warnings
 import time
 
-from src.anti_spoof_predict import AntiSpoofPredict
+from src.anti_spoof_predict import AntiSpoofPredictv2
 from src.generate_patches import CropImage
 from src.utility import parse_model_name
 warnings.filterwarnings('ignore')
@@ -24,7 +24,7 @@ def check_image(image):
 
 
 def test(model_dir, device_id):
-    model_test = AntiSpoofPredict(device_id)
+    model_test = AntiSpoofPredictv2(device_id, model_dir)
     image_cropper = CropImage()
     
     # video init params
@@ -67,7 +67,7 @@ def test(model_dir, device_id):
                 param["crop"] = False
             img = image_cropper.crop(**param)
             start = time.time()
-            prediction += model_test.predict(img, os.path.join(model_dir, model_name))
+            prediction += model_test.predict(img, model_name)
             test_speed += time.time()-start
 
         # draw result of prediction
